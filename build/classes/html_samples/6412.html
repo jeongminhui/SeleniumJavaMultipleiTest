@@ -1,0 +1,227 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SBGrid add Delete Sample</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 라이브러리를 import 할 기본 루틴 디렉토리 지정 -->
+    <script type="text/javascript">
+      var SBpath = "./";
+    </script>
+
+    <!-- css 영역 import -->
+    <!-- Default -->
+    <link href="./SBGrid/css/SBGrid.css" rel="stylesheet" type="text/css" />
+    <link
+      href="./SBGrid/css/SBGrid_Default.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- js 영역 import -->
+    <script src="./SBGrid/SBGrid_Lib.js" type="text/javascript"></script>
+    <script src="./SBGrid/SBGrid_min.js" type="text/javascript"></script>
+
+    <script>
+      $(document).ready(function () {
+        createGrid();
+      });
+
+      var gridProp = {};
+      var gridData = [
+        {
+          CHK: "",
+          TESTCOL1: "key1",
+          TESTCOL2: "TS",
+          TESTCOL3: "20112711689474",
+          TESTCOL4: "null",
+          TESTCOL5: "null",
+          TESTCOL6: "44166",
+          TESTCOL7: "N",
+        },
+        {
+          CHK: "",
+          TESTCOL1: "key2",
+          TESTCOL2: "TS",
+          TESTCOL3: "20110415671609",
+          TESTCOL4: "null",
+          TESTCOL5: "null",
+          TESTCOL6: "44166",
+          TESTCOL7: "N",
+        },
+        {
+          CHK: "",
+          TESTCOL1: "key3",
+          TESTCOL2: "TS",
+          TESTCOL3: "20110415671587",
+          TESTCOL4: "null",
+          TESTCOL5: "null",
+          TESTCOL6: "44166",
+          TESTCOL7: "N",
+        },
+        {
+          CHK: "",
+          TESTCOL1: "key4",
+          TESTCOL2: "TS",
+          TESTCOL3: "20110614673371",
+          TESTCOL4: "null",
+          TESTCOL5: "null",
+          TESTCOL6: "44166",
+          TESTCOL7: "N",
+        },
+        {
+          CHK: "",
+          TESTCOL1: "key5",
+          TESTCOL2: "TS",
+          TESTCOL3: "20111411679405",
+          TESTCOL4: "null",
+          TESTCOL5: "null",
+          TESTCOL6: "44166",
+          TESTCOL7: "N",
+        },
+        {
+          CHK: "",
+          TESTCOL1: "key1",
+          TESTCOL2: "TS",
+          TESTCOL3: "20112711689474",
+          TESTCOL4: "null",
+          TESTCOL5: "null",
+          TESTCOL6: "44166",
+          TESTCOL7: "N",
+        },
+        {
+          CHK: "",
+          TESTCOL1: "key2",
+          TESTCOL2: "TS",
+          TESTCOL3: "20110415671609",
+          TESTCOL4: "null",
+          TESTCOL5: "null",
+          TESTCOL6: "44166",
+          TESTCOL7: "N",
+        },
+        {
+          CHK: "",
+          TESTCOL1: "key3",
+          TESTCOL2: "TS",
+          TESTCOL3: "20110415671587",
+          TESTCOL4: "null",
+          TESTCOL5: "null",
+          TESTCOL6: "44166",
+          TESTCOL7: "N",
+        },
+      ];
+
+      // var gridData2 = Object.assign([], gridData);
+      function createGrid() {
+        gridProp.id = "datagrid";
+        gridProp.parentid = "gridInputArea";
+        gridProp.jsonref = "gridData";
+        gridProp.saveorgdata = true;
+        gridProp.rowheader = ["update"];
+        gridProp.columns = [
+          {
+            caption: [""],
+            ref: "CHK",
+            width: "150px",
+            type: "checkbox",
+            typeinfo: {
+              fixedcellcheckbox: { usemode: true },
+              ignoreupdate: true,
+            },
+          },
+          {
+            caption: ["COL1"],
+            ref: "TESTCOL1",
+            width: "150px",
+            type: "input",
+            isvalidatecheck: true,
+            validate: function (objGrid, nRow, nCol, strValue) {
+              var emptyMsg = null;
+              var data = objGrid.getCellData(nRow, nCol);
+              var colid = objGrid.getColID(nCol);
+              var searchRows = objGrid.searchFilteredRows(
+                [
+                  {
+                    colid: colid,
+                    key: strValue,
+                    type: "equal",
+                    datatype: "string",
+                  },
+                ],
+                ["and"],
+                true
+              );
+              var searchRows2 = objGrid.searchRows(nCol, strValue, true, true);
+              console.log(searchRows2);
+
+              if (strValue.replace(/\s/g, "") == "") {
+                return {
+                  isValid: false,
+                  message:
+                    emptyMsg != null ? emptyMsg : "입력란이 비어있습니다.",
+                  value: strValue,
+                };
+              } else if (
+                (data == strValue ? searchRows.length - 1 : searchRows.length) >
+                0
+              ) {
+                return {
+                  isValid: false,
+                  message: "메뉴코드가 중복",
+                  value: strValue,
+                };
+              }
+
+              return strValue;
+            },
+          },
+          { caption: ["COL2"], ref: "TESTCOL2", width: "150px", type: "input" },
+          { caption: ["COL3"], ref: "TESTCOL3", width: "150px", type: "input" },
+          { caption: ["COL4"], ref: "TESTCOL4", width: "150px", type: "input" },
+          { caption: ["COL5"], ref: "TESTCOL5", width: "150px", type: "input" },
+          { caption: ["COL6"], ref: "TESTCOL6", width: "150px", type: "input" },
+          { caption: ["COL7"], ref: "TESTCOL7", width: "150px", type: "input" },
+        ];
+
+        datagrid = _SBGrid.create(gridProp);
+        //datagrid.setFixedcellcheckbox(0, 1,true,false);
+      }
+
+      function fnDeleteRow() {
+        const val = document.getElementById("inputVAL").value;
+        console.log(val);
+        const msg = datagrid.searchFilteredRows([
+          { colid: "col_2", key: val, type: "equal", datatype: "string" },
+        ]);
+        alert(msg);
+      }
+
+      function fnAddRow() {
+        const val = document.getElementById("inputVAL").value;
+        const msg = datagrid.searchRows(2, val);
+        alert(msg);
+      }
+    </script>
+  </head>
+  <body>
+    <pre>
+      > searchFilteredRows
+      > searchRows
+       => 대소문자를 구분하지 않고 검색하는 기능 추가 요청
+
+      아래 input에 COL1에서 찾을 값을 입력하고 
+      search버튼을 눌러주세요
+
+      
+    </pre>
+
+    <div style="height: 210px">
+      <div id="gridInputArea" style="height: 200px"></div>
+    </div>
+
+    <div>
+      <input type="text" placeholder="검색" id="inputVAL" />
+      <input type="button" onclick="fnDeleteRow()" value="searchFilteredRows" />
+      <input type="button" onclick="fnAddRow()" value="searchRows" />
+    </div>
+  </body>
+</html>

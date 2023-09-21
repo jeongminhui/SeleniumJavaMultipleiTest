@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SBGrid add Delete Sample</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 라이브러리를 import 할 기본 루틴 디렉토리 지정 -->
+    <script type="text/javascript">
+      var SBpath = "./";
+    </script>
+
+    <!-- css 영역 import -->
+    <!-- Default -->
+    <link href="./SBGrid/css/SBGrid.css" rel="stylesheet" type="text/css" />
+    <link
+      href="./SBGrid/css/SBGrid_Default.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- js 영역 import -->
+    <script src="./SBGrid/SBGrid_Lib.js" type="text/javascript"></script>
+    <script src="./SBGrid/SBGrid_min.js" type="text/javascript"></script>
+
+    <script>
+      $(document).ready(function () {
+        createGrid();
+      });
+
+      var gridProp = {};
+      var gridData = [];
+      var gridData1 = [];
+
+      // var gridData2 = Object.assign([], gridData);
+      function createGrid() {
+        gridProp.id = "datagrid";
+        gridProp.parentid = "gridInputArea";
+        gridProp.jsonref = "gridData1";
+        gridProp.saveorgdata = true;
+        gridProp.rowheader = ["update"];
+        gridProp.columns = [
+          {
+            caption: [""],
+            ref: "CHK",
+            width: "150px",
+            type: "checkbox",
+            typeinfo: {
+              fixedcellcheckbox: { usemode: true },
+              ignoreupdate: true,
+            },
+          },
+          {
+            caption: ["COL1"],
+            ref: "TESTCOL1",
+            width: "150px",
+            type: "input",
+            isvalidatecheck: true,
+            validate: function (objGrid, nRow, nCol, strValue) {
+              var emptyMsg = null;
+              var data = objGrid.getCellData(nRow, nCol);
+              var colid = objGrid.getColID(nCol);
+              var searchRows = objGrid.searchFilteredRows(
+                [
+                  {
+                    colid: colid,
+                    key: strValue,
+                    type: "equal",
+                    datatype: "string",
+                  },
+                ],
+                ["and"],
+                true
+              );
+              var searchRows2 = objGrid.searchRows(nCol, strValue, true, true);
+              console.log(searchRows2);
+
+              if (strValue.replace(/\s/g, "") == "") {
+                return {
+                  isValid: false,
+                  message:
+                    emptyMsg != null ? emptyMsg : "입력란이 비어있습니다.",
+                  value: strValue,
+                };
+              } else if (
+                (data == strValue ? searchRows.length - 1 : searchRows.length) >
+                0
+              ) {
+                return {
+                  isValid: false,
+                  message: "메뉴코드가 중복",
+                  value: strValue,
+                };
+              }
+
+              return strValue;
+            },
+          },
+          { caption: ["COL2"], ref: "TESTCOL2", width: "150px", type: "input" },
+          { caption: ["COL3"], ref: "TESTCOL3", width: "150px", type: "input" },
+          { caption: ["COL4"], ref: "TESTCOL4", width: "150px", type: "input" },
+          { caption: ["COL5"], ref: "TESTCOL5", width: "150px", type: "input" },
+          { caption: ["COL6"], ref: "TESTCOL6", width: "150px", type: "input" },
+          { caption: ["COL7"], ref: "TESTCOL7", width: "150px", type: "input" },
+        ];
+
+        datagrid = _SBGrid.create(gridProp);
+        //datagrid.setFixedcellcheckbox(0, 1,true,false);
+      }
+
+      function fnDeleteRowRefresh() {
+        var temp = datagrid.getCheckedRows(1);
+        var allData = datagrid.getGridDataAll();
+
+        for (var i = temp.length - 1; 0 <= i; i--) {
+          datagrid.setRowStatus(temp[i], "delete");
+          allData.splice(temp[i] - 1, 1);
+        }
+
+        gridData = allData;
+        datagrid.refresh({ status: true, focus: false });
+      }
+
+      function fnDeleteRow() {
+        var temp = datagrid.getCheckedRows(1);
+        for (var i = temp.length - 1; 0 <= i; i--) {
+          datagrid.deleteRow(temp[i]);
+        }
+      }
+      function fnAddRow() {
+        //for문이 돈 이후에 refresh를 통해 데이터 바인딩
+        //for(var i=0; i<gridData2.length; i++){
+        //	datagrid.addRow(false,gridData2[i])
+        //}
+
+        var date = new Date();
+        datagrid.addRow(true, { TESTCOL1: "key1" }, true);
+        datagrid.setCol(2);
+        datagrid.editCell();
+      }
+    </script>
+  </head>
+  <body>
+    <pre>
+      0. SBGrid 2992버전
+      1. [addRow메소드]버튼 클릭 하고 1을 입력 후 Enter => 첫 번째 행이 추가되고 1이 입력됨
+      2. [addRow메소드]버튼 클릭 하고 1을 입력 후 Enter => 두 번째 행이 추가되고 1이 입력됨 
+      #### 여기서 중복 체크를 했어야 함 -2925버전에서는 중복체크를 함
+      3. [addRow메소드]버튼 클릭 하고 1을 입력 후 Enter => 세 번째 행이 추가되고 validate체크됨
+      
+    </pre>
+
+    <div style="height: 210px">
+      <div id="gridInputArea" style="height: 200px"></div>
+    </div>
+
+    <div>
+      <input
+        type="button"
+        onclick="fnDeleteRowRefresh()"
+        value="jsondata 제어"
+      />
+      <input type="button" onclick="fnDeleteRow()" value="deleteRow 메소드" />
+      <input type="button" onclick="fnAddRow()" value="addRow 메소드" />
+    </div>
+  </body>
+</html>

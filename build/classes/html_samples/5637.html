@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redmine No. 5637</title>
+    <script type="text/javascript">
+        var SBpath = "./";
+        </script>
+    <script src="./SBGrid/SBGrid_Lib.js" type="text/javascript"></script> 
+    <script src="./SBGrid/SBGrid_min.js" type="text/javascript"></script> 
+    <link type="text/css" rel="stylesheet" href="./SBGrid/css/SBGrid.css">
+    <link type="text/css" rel="stylesheet" href="./SBGrid/css/SBGrid_Default.css">
+</head>
+<body>
+    <div id="gridArea" style="height: 200px"></div>
+    <button onclick="fnSearch1()">datagrid.searchFilteredRows([{key: 'string', colid: 'col_1', type: 'equal', datatype: 'string'}, {key: 50, colid: 'col_2', type: '<=', datatype: 'number'}],['AND']);</button><br>
+    위 버튼 클릭하여 콘솔창의 결과 확인 시, 첫번째 열에서 string이라는 값을 찾고 두번째 열에서 50보다 같거나 작은 값을 찾아 AND 조건이 일치하면 콘솔으로 나타내 줍니다.<br>
+    이후 그리드 데이터 수정 후, 메소드 재실행할 경우 이전 결과가 출력되는 현상이 발견되었습니다.
+    <script>
+        $(function(){
+            createGrid();
+        })
+
+        var datagrid;
+        function createGrid(){
+            var prop = {
+                parentid : 'gridArea',
+                id : 'datagrid',
+                jsonref : 'jsonData',
+                extendlastcol: 'scroll',
+				rowheader: ['seq'],
+                columns: [
+                    {caption: ['string'], ref: 'col1Data', width: "250px", style: 'text-align: center', type: 'input'},
+                    {caption: ['number'], ref: 'col2Data', width: "250px", style: 'text-align: center', type: 'input', datatype: 'number'},
+                ]
+            };
+            datagrid = _SBGrid.create(prop);
+        };
+
+        function fnSearch1(){
+            console.log(datagrid.searchFilteredRows([{key: 'string', colid: 'col_1', type: 'equal', datatype: 'string'},
+                                                     {key: 50,       colid: 'col_2', type: '<=',    datatype: 'number'}],['AND'],true))
+        }
+        var jsonData = [];
+        for(i = 1; i <= 100; i++){
+            jsonData.push({"col1Data": "string", "col2Data": i, "col3Data": "textarea"+i});
+        };
+    </script>
+</body>
+</html>
